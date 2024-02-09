@@ -1,7 +1,7 @@
 {
   "name": "@sitinc/dialogflowcx-webhook-template",
   "version": "0.0.1",
-  "description": "Typescript base template project for Dialogflow CX webhook API gateways on ExpressJS.",
+  "description": "Typescript/ExpressJS/Docker base template project for Dialogflow CX webhook API gateways.",
   "main": "dist/server.js",
   "directories": {
     "test": "test"
