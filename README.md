@@ -1,2 +1,4 @@
 # dialogflowcx-webhook-template
-Typescript template project for Dialogflow CX webhook gateways.
+Typescript base template project for Dialogflow CX webhook API gateways on ExpressJS.
+
+Documentation coming soon!

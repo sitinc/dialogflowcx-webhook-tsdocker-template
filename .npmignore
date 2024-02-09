@@ -1,0 +1,13 @@
+# .npmignore
+.vscode
+.eslintignore
+.eslintrc.json
+.gitattributes
+.gitignore
+.npmrc
+.nycrc.json
+assets
+docs
+node_modules
+test
+tsconfig.json

@@ -1,0 +1,108 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "version": "0.0.1",
+      "title": "dialogflowcx-webhook-template",
+      "description": "Typescript base template project for Dialogflow CX webhook API gateways on ExpressJS.",
+      "termsOfService": "/static/tos.txt",
+      "contact": {
+        "name": "Someone Else",
+        "url": "https://example.site/",
+        "email": "someone@example.net"
+      },
+      "license": "MIT"
+    },
+    "securityDefinitions": {
+      "username": {
+          "type": "apiKey",
+          "in": "header",
+          "name": "X-Custom-Username",
+          "description": "The customAPI username authentication header."
+      },
+      "apiKey": {
+          "type": "apiKey",
+          "in": "header",
+          "name": "X-Custom-API-Key",
+          "description": "The custom API password authentication header."
+      }
+  },
+    "servers": [
+        {
+          "url": "http://localhost:8080/",
+          "description": "Development"
+        },
+        {
+          "url": "https://xxx-uat.run.app/",
+          "description": "User Acceptance Testing"
+        },
+        {
+          "url": "https://xxx.run.app/",
+          "description": "Production"
+        }
+    ],
+    "tags": [
+      {
+        "name": "Tests",
+        "description": "Endpoints for testing."
+      }
+    ],
+    "paths": {
+        "/": {
+          "post": {
+            "security": [
+              {"username": []},
+              {"apiKey": []}
+            ],
+            "tags": ["Tests"],
+            "summary": "Test the service.",
+            "description": "Test the service.",
+            "operationId": "testTheService",
+            "parameters": [
+                {
+                  "in": "query",
+                  "name": "testText",
+                  "schema": { "type": "string" },
+                  "default": "Hello",
+                  "required": true,
+                  "description": "The test text."
+                }
+            ],
+            "consumes": ["application/json"],
+            "produces": ["application/json"],
+            "responses": {
+              "200": {
+                "description": "OK",
+                "schema": {
+                  "$ref": "#/definitions/RetVal"
+                }
+              }
+            }
+          }
+        }
+      },
+      "definitions": {
+        "RetVal": {
+          "required": ["name", "_id", "companies"],
+          "properties": {
+            "transId": {"type": "string", "description": "The transaction ID."},
+            "retval": {"type": "integer", "description": "The return code value. ZERO is for successful responses, NEGATIVE numbers are for system errors, and POSITIVE numbers are for user errors."},
+            "retmsg": {"type": "string", "description": "The return message."}
+          }
+        }
+      },
+    "schemes": ["https", "http"],
+    "consumes": ["application/json"],
+    "produces": ["application/json"],
+    "components": {
+        "parameters": {
+            "encodedBody": {
+                "name": "encodedBody",
+                "in": "body",
+                "description": "The encoded body.",
+                "schema": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
