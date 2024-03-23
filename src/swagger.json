@@ -17,13 +17,13 @@
           "type": "apiKey",
           "in": "header",
           "name": "X-Custom-Username",
-          "description": "The customAPI username authentication header."
+          "description": "The customAPI username authentication header - NOTE: adjust after build"
       },
       "apiKey": {
           "type": "apiKey",
           "in": "header",
           "name": "X-Custom-API-Key",
-          "description": "The custom API password authentication header."
+          "description": "The custom API password authentication header - NOTE: adjust after build."
       }
   },
     "servers": [
