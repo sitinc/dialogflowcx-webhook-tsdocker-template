@@ -54,24 +54,13 @@ router.post('/', async (req: Request, res: Response) => {
 
     let webbookContext = new WebhookContext(transId, req, res);
 
-    const userAgentHeader = req.get('User-Agent');
-    if (userAgentHeader === process.env.GCP_CLOUDMON) {
-        resPayload.sessionInfo = {
-            parameters: {
-              ...req.body.sessionInfo?.parameters,
-              ...webbookContext.params,
-            },
-        };
-        resPayload.retval = 0;
-        resPayload.retmsg = 'Success';
-        res.status(200).send(resPayload);
-        return;
-    }
+    const custom_username_hdr_name = process.env.AUTH_USERNAME_HDR || "X-My-Special-Username"
+    const custom_password_hdr_name = process.env.AUTH_PASSWORD_HDR || "X-My-Special-Password"
 
-    const usernameHeader = req.get('X-Custom-Username');
-    const passwordHeader = req.get('X-Custom-Password');
-    if (usernameHeader !== process.env.XCUSTOM_USERNAME ||
-        passwordHeader !== process.env.XCUSTOM_PASSWORD) {
+    const usernameHeader = req.get(custom_username_hdr_name);
+    const passwordHeader = req.get(custom_password_hdr_name);
+    if (usernameHeader !== process.env.AUTH_USERNAME_VAL ||
+        passwordHeader !== process.env.AUTH_PASSWORD_VAL) {
       resPayload.sessionInfo = {
           parameters: {
             ...req.body.sessionInfo?.parameters,
