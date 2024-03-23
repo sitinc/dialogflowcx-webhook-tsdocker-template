@@ -1,6 +1,6 @@
 # Set Local Variables.
 locals {
-  swagger_json = templatefile("./templates/swagger_tlp.json", {
+  swagger_json = templatefile("./templates/swagger_tpl.json", {
     swagger_title = "${local.cloud_run_apigw_service_name} Swagger UI",
     swagger_desc = "Swagger UI for the ${local.cloud_run_apigw_service_name} service.",
     hdr_auth_username = var.gcp_cloud_run_username_hdr,
