@@ -2,7 +2,7 @@
     "swagger": "2.0",
     "info": {
       "version": "0.0.1",
-      "title": "dialogflowcx-webhook-template",
+      "title": "app-template",
       "description": "Typescript base template project for Dialogflow CX webhook API gateways on ExpressJS.",
       "termsOfService": "/static/tos.txt",
       "contact": {
@@ -16,14 +16,14 @@
       "username": {
           "type": "apiKey",
           "in": "header",
-          "name": "X-Custom-Username",
-          "description": "The customAPI username authentication header - NOTE: adjust after build"
+          "name": "X-My-Special-Username",
+          "description": "The customAPI username authentication header - NOTE: IaC will generated updated file."
       },
       "apiKey": {
           "type": "apiKey",
           "in": "header",
-          "name": "X-Custom-API-Key",
-          "description": "The custom API password authentication header - NOTE: adjust after build."
+          "name": "X-My-Special-Password",
+          "description": "The custom API password authentication header - NOTE: IaC will generated updated file."
       }
   },
     "servers": [
@@ -33,11 +33,11 @@
         },
         {
           "url": "https://xxx-uat.run.app/",
-          "description": "User Acceptance Testing"
+          "description": "User Acceptance Testing - NOTE: IaC will generated updated file."
         },
         {
           "url": "https://xxx.run.app/",
-          "description": "Production"
+          "description": "Production - NOTE: IaC will generated updated file."
         }
     ],
     "tags": [
