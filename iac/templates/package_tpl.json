@@ -1,7 +1,7 @@
 {
-  "name": "@someownwer/someproject-template",
+  "name": "@${github_repo_owner}/${github_repo_name}",
   "version": "0.0.1",
-  "description": "Typescript/ExpressJS/Docker base template project for Dialogflow CX webhook API gateways.",
+  "description": "Dialogflow CX webhook API gateway for ${app_name}.",
   "main": "dist/server.js",
   "directories": {
     "test": "test"
@@ -16,8 +16,8 @@
     "test": "mocha test/*.js --check-leaks"
   },
   "keywords": [],
-  "author": "Someone Else",
-  "license": "MIT",
+  "author": "${contact_name}",
+  "license": "${app_license}",
   "dependencies": {
     "@sitinc/dialogflowcx-tagexpress": "^0.0.1",
     "body-parser": "^1.20.2",
