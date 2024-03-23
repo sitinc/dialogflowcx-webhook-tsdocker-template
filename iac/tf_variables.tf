@@ -84,48 +84,6 @@ variable "dialogflow_cx_default_language" {
   default     = "en"
 }
 
-variable "oauth_client_id" {
-  description = "The OAuth client ID for GCP domain validation."
-  type        = string
-  sensitive   = true
-}
-
-variable "oauth_app_name" {
-  description = "The OAuth app name for GCP domain validation."
-  type        = string
-  sensitive   = true
-}
-
-variable "calendly_api_key" {
-  description = "The Calendly API key."
-  type        = string
-  sensitive   = true
-}
-
-variable "calendly_uuid" {
-  description = "The Calendly UUID."
-  type        = string
-  sensitive   = true
-}
-
-variable "gauth_service_account" {
-  description = "The Google Contacts and Calendar API service account."
-  type        = string
-  sensitive   = true
-}
-
-variable "gauth_calendar_id" {
-  description = "The Google ID for Calendar API requests."
-  type        = string
-  sensitive   = true
-}
-
-variable "gauth_impersonate_email" {
-  description = "The Google email to impersonate with Calendar invite requests."
-  type        = string
-  sensitive   = true
-}
-
 variable "github_owner" {
   description = "The GitHub repository owner."
   type        = string
