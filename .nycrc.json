@@ -4,6 +4,8 @@
     "dist/**/*.js"
   ],
   "exclude": [
-    "**/*.spec.js"
+    "**/*.spec.js",
+    "**/*.tf",
+    "**/*.tfvars"
   ]
 }
