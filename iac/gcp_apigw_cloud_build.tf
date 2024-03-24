@@ -163,6 +163,7 @@ resource "google_secret_manager_secret_iam_policy" "github_token_policy" {
 # Create the GitHub connection.
 resource "google_cloudbuildv2_connection" "my_connection" {
     depends_on = [
+      google_project_service.cloudbuild_api,
       google_project_service.cloudsourcerepos_api,
       google_secret_manager_secret_iam_policy.github_token_policy,
     ]
@@ -181,6 +182,7 @@ resource "google_cloudbuildv2_connection" "my_connection" {
 # Link the GitHub repository.
 resource "google_cloudbuildv2_repository" "my_repository" {
   depends_on = [
+    google_project_service.cloudbuild_api,
     google_project_service.cloudsourcerepos_api,
     google_cloudbuildv2_connection.my_connection,
   ]
