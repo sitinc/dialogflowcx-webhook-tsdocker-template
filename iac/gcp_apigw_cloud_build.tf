@@ -182,6 +182,7 @@ resource "google_cloudbuildv2_connection" "my_connection" {
 resource "google_cloudbuildv2_repository" "my_repository" {
   depends_on = [
     google_project_service.cloudsourcerepos_api,
+    google_cloudbuildv2_connection.my_connection,
   ]
   project = var.project_id
   location = var.region
@@ -198,6 +199,7 @@ resource "google_cloudbuildv2_repository" "my_repository" {
 resource "google_cloudbuild_trigger" "main" {
   depends_on = [
     google_project_service.cloudbuild_api,
+    google_cloudbuildv2_connection.my_connection,
     google_cloudbuildv2_repository.my_repository,
   ]
   project = var.project_id
@@ -240,6 +242,7 @@ resource "google_cloudbuild_trigger" "main" {
 resource "google_cloudbuild_trigger" "uat" {
   depends_on = [
     google_project_service.cloudbuild_api,
+    google_cloudbuildv2_connection.my_connection,
     google_cloudbuildv2_repository.my_repository,
   ]
   project = var.project_id
