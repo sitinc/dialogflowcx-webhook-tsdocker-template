@@ -89,6 +89,9 @@ variable "info_types" {
 }
 
 resource "google_data_loss_prevention_inspect_template" "inspect" {
+  depends_on = [
+    google_project_service.dlp_api
+  ]
   parent       = "projects/${var.project_id}/locations/${var.region}"
   display_name = "${var.app_name}-inspect-template"
   inspect_config {
@@ -103,6 +106,9 @@ resource "google_data_loss_prevention_inspect_template" "inspect" {
 }
 
 resource "google_data_loss_prevention_deidentify_template" "deidentify" {
+  depends_on = [
+    google_project_service.dlp_api
+  ]
   parent       = "projects/${var.project_id}/locations/${var.region}"
   display_name = "${var.app_name}-deidentify-template"
   deidentify_config {
@@ -123,6 +129,10 @@ resource "google_data_loss_prevention_deidentify_template" "deidentify" {
 #}
 
 resource "google_dialogflow_cx_security_settings" "basic_security_settings" {
+  depends_on = [
+    google_data_loss_prevention_inspect_template.inspect,
+    google_data_loss_prevention_deidentify_template.deidentify,
+  ]
   display_name        = "${var.app_name}-security-settings"
   location            = var.region
   redaction_strategy  = "REDACT_WITH_SERVICE"
