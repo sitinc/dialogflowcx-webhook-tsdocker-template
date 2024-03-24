@@ -332,3 +332,18 @@ You should now have two GitHub repos:
  - The one created for backup-restore purposes with Dialogflow CX agents.  For my example, **test-cxagent1-cx-dr**.
 
 The next step... connecting Dialogflow CX to your service channels!
+
+Or...
+
+If you need to clean-up after everything you've created, use the **terraform destroy** command.
+
+**NOTE**
+You will need to remove the webhook associations we created for the "main" and "uat" Dialogflow CX agents for the destroy to succeed.
+
+```bash
+terraform destroy --var-file=secret.tfvars
+```
+
+ ![Terraform destroy!](/docs/assets/20240324-terraform-destroy.png "Terraform destroy")
+
+The only things that should remain are the service APIs enabled in the GCP project.
