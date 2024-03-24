@@ -26,22 +26,29 @@ resource "google_project_service" "artifactregistry_api" {
 
 # Create dedicated SA account for APIGW Cloud Build.
 resource "google_service_account" "apigw_build_sa" {
+  depends_on = [ google_project_service.iam_manager_api ]
   account_id   = "${local.cloud_run_apigw_sa_build}"
   display_name = "Dedicated Cloud Build SA for ${local.cloud_run_apigw_service_name} service."
 }
 
 # Permisions for dedicated SA account for APIGW Cloud Build.
 resource "google_project_iam_member" "cloudbuild_secrets_viewer" {
+  depends_on = [ google_project_service.iam_manager_api ]
   project = var.project_id
   role    = "roles/secretmanager.secretAccessor"
   member  = "serviceAccount:${google_service_account.apigw_build_sa.email}"
 }
 
 resource "google_project_iam_member" "cloudbuild_cloudrun_deployer" {
+  depends_on = [ google_project_service.iam_manager_api ]
   project = var.project_id
   role    = "roles/run.admin"
   member  = "serviceAccount:${google_service_account.apigw_build_sa.email}"
 }
+
+
+//service-666043410170@gcp-sa-cloudbuild.iam.gserviceaccount.com
+
 
 #######################
 # Access Core Secrets #
@@ -61,11 +68,16 @@ data "google_iam_policy" "buildagent_secretAccessor" {
   depends_on = [data.google_project.main_project]
     binding {
         role = "roles/secretmanager.secretAccessor"
-        members = ["serviceAccount:${data.google_project.main_project.number}@cloudbuild.gserviceaccount.com"]
+        members = [
+          "serviceAccount:${data.google_project.main_project.number}@cloudbuild.gserviceaccount.com",
+          "serviceAccount:service-${data.google_project.main_project.number}@gcp-sa-cloudbuild.iam.gserviceaccount.com",
+          "serviceAccount:${google_service_account.apigw_build_sa.email}",
+        ]
     }
 }
 
 resource "google_secret_manager_secret_iam_policy" "npm_token_policy" {
+  depends_on = [ google_project_service.iam_manager_api ]
   project = var.project_id
   secret_id = data.google_secret_manager_secret.npm_token.secret_id
   policy_data = data.google_iam_policy.buildagent_secretAccessor.policy_data
@@ -84,11 +96,16 @@ data "google_secret_manager_secret_version" "github_token_latest" {
 data "google_iam_policy" "serviceagent_secretAccessor" {
     binding {
         role = "roles/secretmanager.secretAccessor"
-        members = ["serviceAccount:${google_service_account.apigw_build_sa.email}"]
+        members = [
+          "serviceAccount:${data.google_project.main_project.number}@cloudbuild.gserviceaccount.com",
+          "serviceAccount:service-${data.google_project.main_project.number}@gcp-sa-cloudbuild.iam.gserviceaccount.com",
+          "serviceAccount:${google_service_account.apigw_build_sa.email}",
+        ]
     }
 }
 
 resource "google_secret_manager_secret_iam_policy" "github_token_policy" {
+  depends_on = [ google_project_service.iam_manager_api ]
   project = var.project_id
   secret_id = data.google_secret_manager_secret.github_token.secret_id
   policy_data = data.google_iam_policy.serviceagent_secretAccessor.policy_data
