@@ -200,8 +200,8 @@ resource "google_cloudbuild_trigger" "main" {
   depends_on = [
     google_project_service.cloudsourcerepos_api,
     google_project_service.cloudbuild_api,
-    google_cloudbuildv2_connection.my_connection,
-    google_cloudbuildv2_repository.my_repository,
+    #google_cloudbuildv2_connection.my_connection,
+    #google_cloudbuildv2_repository.my_repository,
   ]
   project = var.project_id
   name = "${local.cloud_run_apigw_trigger_name}-prod"
@@ -209,7 +209,7 @@ resource "google_cloudbuild_trigger" "main" {
   location = var.region
 
   repository_event_config {
-    repository = "projects/${var.project_id}/locations/${var.region}/connections/${local.github_cxn_id}/repositories/${var.github_owner}-${var.github_repo}"
+    repository = "projects/${var.project_id}/locations/${var.region}/connections/${google_cloudbuildv2_connection.my_connection.name}/repositories/${var.github_owner}-${var.github_repo}"
     push {
       branch = "^main$"
     }
@@ -244,8 +244,8 @@ resource "google_cloudbuild_trigger" "uat" {
   depends_on = [
     google_project_service.cloudsourcerepos_api,
     google_project_service.cloudbuild_api,
-    google_cloudbuildv2_connection.my_connection,
-    google_cloudbuildv2_repository.my_repository,
+    #google_cloudbuildv2_connection.my_connection,
+    #google_cloudbuildv2_repository.my_repository,
   ]
   project = var.project_id
   name = "${local.cloud_run_apigw_trigger_name}-uat"
@@ -253,7 +253,7 @@ resource "google_cloudbuild_trigger" "uat" {
   location = var.region
 
   repository_event_config {
-    repository = "projects/${var.project_id}/locations/${var.region}/connections/${local.github_cxn_id}/repositories/${var.github_owner}-${var.github_repo}"
+    repository = "projects/${var.project_id}/locations/${var.region}/connections/${google_cloudbuildv2_connection.my_connection.name}/repositories/${var.github_owner}-${var.github_repo}"
     push {
       branch = "^uat$"
     }
