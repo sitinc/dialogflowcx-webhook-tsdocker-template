@@ -314,4 +314,11 @@ You can now make use of this data for analytics purposes.
 
 We did it!  You should have a running Hello world example with plenty of room to expand to build the next virtual agent of your dreams... ;)
 
+You should now have two GitHub repos:
+
+ - The one you created based on this template.  For my example, **test-cxagent1**.
+   - Manage infrastructure as code with Terraform in the **iac** directory.
+   - Develop the API webhook gateway with Typescript/Javascript in the **src** directory.
+ - The one created for backup-restore purposes with Dialogflow CX agents.  For my example, **test-cxagent1-cx-dr**.
+
 The next step... connecting Dialogflow CX to your service channels!
