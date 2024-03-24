@@ -227,6 +227,9 @@ Remaining in *Agent settings*, navigate to *Speech and IVR*.
 
 Click *Save*
 
+**NOTE:**
+REPEAT for "-uat" Dialogflow CX Agent.  These settings do not synchronize with backups.
+
 ### Verifying the Webhooks
 
 Let's make sure the webhooks we have setup are working as we expect.
