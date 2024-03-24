@@ -92,18 +92,23 @@ fi
 echo "    Initializing Terraform Backend..."
 
 # Enable Dialogflow API
+echo "Enabling Google Dialogflow APIs"
 gcloud services enable dialogflow.googleapis.com
 
 # Enable Google Cloud Storage API
+echo "Enabling Google Storage APIs"
 gcloud services enable storage.googleapis.com
 
 # Enable Google Secret Manager API
+echo "Enabling Google Secret Manager APIs"
 gcloud services enable secretmanager.googleapis.com
 
 # Enable Google Cloud Resource Manager API
+echo "Enabling Google Cloud Resource Manager APIs"
 gcloud services enable cloudresourcemanager.googleapis.com
 
 # Enable Google Compute API
+echo "Enabling Google Compute APIs"
 gcloud services enable compute.googleapis.com
 
 # Create Storage Bucket
