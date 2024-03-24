@@ -14,6 +14,7 @@ resource "google_project_service" "dialogflow_api" {
 
 resource "google_dialogflow_cx_agent" "main" {
   depends_on = [
+    google_project_service.dialogflow_api,
     github_repository.dialogflow_cx_repo,
     google_dialogflow_cx_security_settings.basic_security_settings
   ]
@@ -64,8 +65,10 @@ resource "google_dialogflow_cx_agent" "main" {
 
 resource "google_dialogflow_cx_agent" "uat" {
   depends_on = [
+    google_project_service.dialogflow_api,
     github_repository.dialogflow_cx_repo,
-    google_dialogflow_cx_security_settings.basic_security_settings
+    google_dialogflow_cx_security_settings.basic_security_settings,
+    google_dialogflow_cx_agent.main,
   ]
   display_name              = "${local.dialogflow_cx_agent_name}-uat"
   location                  = var.region
