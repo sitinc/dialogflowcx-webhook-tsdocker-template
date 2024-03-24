@@ -128,11 +128,21 @@ resource "google_data_loss_prevention_deidentify_template" "deidentify" {
 #  uniform_bucket_level_access = true
 #}
 
+resource "null_resource" "wait_after_dlp_templates" {
+  depends_on = [
+    google_data_loss_prevention_inspect_template.inspect,
+    google_data_loss_prevention_deidentify_template.deidentify,
+  ]
+
+  provisioner "local-exec" {
+    command = "sleep 120"
+  }
+}
+
 resource "google_dialogflow_cx_security_settings" "basic_security_settings" {
   depends_on = [
     google_project_service.dlp_api,
-    #google_data_loss_prevention_inspect_template.inspect,
-    #google_data_loss_prevention_deidentify_template.deidentify,
+    null_resource.wait_after_dlp_templates,
   ]
   display_name        = "${var.app_name}-security-settings"
   location            = var.region
