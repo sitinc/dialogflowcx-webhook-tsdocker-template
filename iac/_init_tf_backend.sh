@@ -107,6 +107,10 @@ gcloud services enable compute.googleapis.com
 # Set gcloud region
 gcloud config set compute/region "$gcp_region"
 
+# Enable Google IAM API
+echo "Enabling Google IAM APIs"
+gcloud services enable iam.googleapis.com
+
 # Enable Dialogflow API
 echo "Enabling Google Dialogflow APIs"
 gcloud services enable dialogflow.googleapis.com
