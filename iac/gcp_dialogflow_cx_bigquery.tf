@@ -9,6 +9,10 @@ resource "google_project_service" "bigquery_api" {
 }
 
 resource "google_bigquery_dataset" "dialogflow_logs_dataset" {
+  depends_on = [
+    google_dialogflow_cx_agent.main,
+    google_dialogflow_cx_agent.uat
+  ]
   dataset_id                  = "${local.app_name_under}_dataset"
   location                    = var.region
   description                 = "Dataset for storing ${var.app_name}'s data warehouse tables."
