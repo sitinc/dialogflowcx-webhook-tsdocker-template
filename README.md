@@ -18,7 +18,7 @@ Per-Environment ("main" and "uat") Project Resources:
  - Cloud Run: ExpressJS Dialogflow CX Webhook Fulfillment API Gateway
  - Cloud Build Trigger: GitHub -> Build & Test -> Artifact Registry -> Cloud Run
 
-Dedicated services accounts (SAs) are used for cloud run, and least possible priviledges as assigned to it and service-specific SAs like cloud build and Dialogflow CX.
+Dedicated services accounts (SAs) are used for cloud run, and least possible priviledges as assigned to it and service-specific SAs like cloud build and Dialogflow CX.  Custom HTTP username and password headers are used between Cloud Run Webhooks and Dialogflow CX, all managed by Terraform.
 
 Multiple environments are managed under a single branch to simplify the inter-referencing of configurations.  The expected behaviour of multi-brand IaC is that both the "main" branch and "uat" branch would each have "main" and "uat" resources for their GCP project-isolated environments.
 
