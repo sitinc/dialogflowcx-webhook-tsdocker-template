@@ -14,12 +14,14 @@ resource "google_project_service" "cloud_run_api" {
 
 # Create dedicated SA account for APIGW Cloud Run.
 resource "google_service_account" "apigw_run_sa" {
+  depends_on = [ google_project_service.iam_manager_api ]
   account_id   = "${local.cloud_run_apigw_sa_run}"
   display_name = "Dedicated Cloud Run SA for ${local.cloud_run_apigw_service_name} service."
 }
 
 # Permisions for dedicated SA account for APIGW Cloud Run.
 resource "google_project_iam_member" "cloudrun_secrets_viewer" {
+  depends_on = [ google_project_service.iam_manager_api ]
   project = var.project_id
   role    = "roles/secretmanager.secretAccessor"
   member  = "serviceAccount:${google_service_account.apigw_run_sa.email}"
@@ -159,7 +161,10 @@ resource "google_cloud_run_v2_service" "uat" {
 
 # Enable public access to MAIN.
 resource "google_cloud_run_service_iam_member" "allow_unauthenticated_main" {
-  depends_on = [google_cloud_run_v2_service.main]
+  depends_on = [
+    google_cloud_run_v2_service.main,
+    google_project_service.iam_manager_api,
+  ]
   project  = var.project_id
   service  = google_cloud_run_v2_service.main.name
   location = google_cloud_run_v2_service.main.location
@@ -169,6 +174,7 @@ resource "google_cloud_run_service_iam_member" "allow_unauthenticated_main" {
 
 # Enable private access to MAIN (not needed when public, unless you later delete public).
 resource "google_cloud_run_service_iam_member" "invoker_main" {
+  depends_on = [ google_project_service.iam_manager_api ]
   service  = google_cloud_run_v2_service.main.name
   location = google_cloud_run_v2_service.main.location
   role     = "roles/run.invoker"
@@ -177,7 +183,10 @@ resource "google_cloud_run_service_iam_member" "invoker_main" {
 
 # Enable public access to UAT.
 resource "google_cloud_run_service_iam_member" "allow_unauthenticated_uat" {
-  depends_on = [google_cloud_run_v2_service.uat]
+  depends_on = [
+    google_project_service.iam_manager_api,
+    google_cloud_run_v2_service.uat
+  ]
   project  = var.project_id
   service  = google_cloud_run_v2_service.uat.name
   location = google_cloud_run_v2_service.uat.location
@@ -187,6 +196,7 @@ resource "google_cloud_run_service_iam_member" "allow_unauthenticated_uat" {
 
 # Enable private access to UAT (not needed when public, unless you later delete public).
 resource "google_cloud_run_service_iam_member" "invoker_uat" {
+  depends_on = [ google_project_service.iam_manager_api ]
   service  = google_cloud_run_v2_service.uat.name
   location = google_cloud_run_v2_service.uat.location
   role     = "roles/run.invoker"
