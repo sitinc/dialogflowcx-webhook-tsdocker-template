@@ -8,6 +8,36 @@ resource "google_project_service" "dialogflow_api" {
   disable_on_destroy = false
 }
 
+# Enable the Storage API
+resource "google_project_service" "storage_api" {
+  service = "storage.googleapis.com"
+  disable_on_destroy = false
+}
+
+#############################################
+# Create Dialogflow CX Audio Storage Bucket #
+#############################################
+
+resource "google_storage_bucket" "dialogflow_cx_audio_storage" {
+  depends_on = [ google_project_service.storage_api ]
+  name                        = "${var.app_name}-cx-recordings"
+  location                    = var.region
+  uniform_bucket_level_access = false
+}
+
+resource "google_storage_bucket_iam_binding" "audio_storage_bindings" {
+  depends_on = [
+    google_project_service.iam_manager_api,
+    google_dialogflow_cx_agent.dev,
+  ]
+  bucket = google_storage_bucket.dialogflow_cx_audio_storage.name
+  role   = "roles/storage.objectCreator"
+
+  members = [
+    "serviceAccount:service-${data.google_project.main_project.number}@gcp-sa-dialogflow.iam.gserviceaccount.com",
+  ]
+}
+
 ###############################
 # Create Dialogflow CX Agents #
 ###############################
@@ -16,6 +46,7 @@ resource "google_dialogflow_cx_agent" "main" {
   depends_on = [
     google_project_service.dialogflow_api,
     github_repository.dialogflow_cx_repo,
+    google_storage_bucket.dialogflow_cx_audio_storage,
     google_dialogflow_cx_security_settings.basic_security_settings,
   ]
   display_name              = "${local.dialogflow_cx_agent_name}"
@@ -33,9 +64,9 @@ resource "google_dialogflow_cx_agent" "main" {
     enable_speech_adaptation = true
   }
   advanced_settings {
-    #audio_export_gcs_destination {
-    #  uri = "${google_storage_bucket.bucket.url}/prefix-"
-    #}
+    audio_export_gcs_destination {
+      uri = "${google_storage_bucket.dialogflow_cx_audio_storage.url}/prefix-"
+    }
     dtmf_settings {
       enabled = true
       max_digits = 1
@@ -67,8 +98,8 @@ resource "google_dialogflow_cx_agent" "uat" {
   depends_on = [
     google_project_service.dialogflow_api,
     github_repository.dialogflow_cx_repo,
+    google_storage_bucket.dialogflow_cx_audio_storage,
     google_dialogflow_cx_security_settings.basic_security_settings,
-    google_dialogflow_cx_agent.main,
   ]
   display_name              = "${local.dialogflow_cx_agent_name}-uat"
   location                  = var.region
@@ -85,9 +116,9 @@ resource "google_dialogflow_cx_agent" "uat" {
     enable_speech_adaptation = true
   }
   advanced_settings {
-    #audio_export_gcs_destination {
-    #  uri = "${google_storage_bucket.bucket.url}/prefix-"
-    #}
+    audio_export_gcs_destination {
+      uri = "${google_storage_bucket.dialogflow_cx_audio_storage.url}/prefix-"
+    }
     dtmf_settings {
       enabled = true
       max_digits = 1
@@ -134,9 +165,6 @@ resource "google_dialogflow_cx_agent" "dev" {
     enable_speech_adaptation = true
   }
   advanced_settings {
-    #audio_export_gcs_destination {
-    #  uri = "${google_storage_bucket.bucket.url}/prefix-"
-    #}
     dtmf_settings {
       enabled = true
       max_digits = 1

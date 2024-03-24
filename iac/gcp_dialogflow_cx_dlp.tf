@@ -122,12 +122,6 @@ resource "google_data_loss_prevention_deidentify_template" "deidentify" {
   }
 }
 
-#resource "google_storage_bucket" "bucket" {
-#  name                        = "dialogflowcx-bucket"
-#  location                    = "US"
-#  uniform_bucket_level_access = true
-#}
-
 resource "google_dialogflow_cx_security_settings" "basic_security_settings" {
   depends_on = [
     google_project_service.dlp_api,
@@ -142,12 +136,12 @@ resource "google_dialogflow_cx_security_settings" "basic_security_settings" {
   inspect_template    = google_data_loss_prevention_inspect_template.inspect.id
   deidentify_template = google_data_loss_prevention_deidentify_template.deidentify.id
   purge_data_types    = ["DIALOGFLOW_HISTORY"]
-  #audio_export_settings {
-  #  gcs_bucket             = google_storage_bucket.bucket.id
-  #  audio_export_pattern   = "export"
-  #  enable_audio_redaction = true
-  #  audio_format           = "OGG"
-  #}
+  audio_export_settings {
+    gcs_bucket             = google_storage_bucket.dialogflow_cx_audio_storage.id
+    audio_export_pattern   = "prefix-"
+    enable_audio_redaction = true
+    audio_format           = "MULAW"
+  }
   insights_export_settings {
     enable_insights_export = true
   }
