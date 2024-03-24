@@ -310,3 +310,5 @@ You can now make use of this data for analytics purposes.
 # Summary
 
 We did it!  You should have a running Hello world example with plenty of room to expand to build the next virtual agent of your dreams... ;)
+
+The next step... connecting Dialogflow CX to your service channels!
