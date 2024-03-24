@@ -91,6 +91,26 @@ fi
 
 echo "    Initializing Terraform Backend..."
 
+# Set gcloud project and billing.
+gcloud config set project "$gcp_project"
+
+# Enable Google Cloud Resource Manager API
+echo "Enabling Google Cloud Resource Manager APIs"
+gcloud services enable cloudresourcemanager.googleapis.com
+
+gcloud auth application-default set-quota-project "$gcp_project"
+
+# Enable Google Compute API
+echo "Enabling Google Compute APIs"
+gcloud services enable compute.googleapis.com
+
+# Set gcloud region
+gcloud config set compute/region "$gcp_region"
+
+# Enable Google IAM API
+echo "Enabling Google IAM APIs"
+gcloud services enable iam.googleapis.com
+
 # Enable Dialogflow API
 echo "Enabling Google Dialogflow APIs"
 gcloud services enable dialogflow.googleapis.com
@@ -102,14 +122,6 @@ gcloud services enable storage.googleapis.com
 # Enable Google Secret Manager API
 echo "Enabling Google Secret Manager APIs"
 gcloud services enable secretmanager.googleapis.com
-
-# Enable Google Cloud Resource Manager API
-echo "Enabling Google Cloud Resource Manager APIs"
-gcloud services enable cloudresourcemanager.googleapis.com
-
-# Enable Google Compute API
-echo "Enabling Google Compute APIs"
-gcloud services enable compute.googleapis.com
 
 # Create Storage Bucket
 gsutil mb -p "$gcp_project" -c STANDARD -l "$gcp_region" -b on "gs://${app_name}_tfstate/"

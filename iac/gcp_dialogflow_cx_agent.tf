@@ -8,6 +8,36 @@ resource "google_project_service" "dialogflow_api" {
   disable_on_destroy = false
 }
 
+# Enable the Storage API
+resource "google_project_service" "storage_api" {
+  service = "storage.googleapis.com"
+  disable_on_destroy = false
+}
+
+#############################################
+# Create Dialogflow CX Audio Storage Bucket #
+#############################################
+
+resource "google_storage_bucket" "dialogflow_cx_audio_storage" {
+  depends_on = [ google_project_service.storage_api ]
+  name                        = "${var.app_name}-cx-recordings"
+  location                    = var.region
+  uniform_bucket_level_access = false
+}
+
+resource "google_storage_bucket_iam_binding" "audio_storage_bindings" {
+  depends_on = [
+    google_project_service.iam_manager_api,
+    google_dialogflow_cx_agent.dev,
+  ]
+  bucket = google_storage_bucket.dialogflow_cx_audio_storage.name
+  role   = "roles/storage.objectCreator"
+
+  members = [
+    "serviceAccount:service-${data.google_project.main_project.number}@gcp-sa-dialogflow.iam.gserviceaccount.com",
+  ]
+}
+
 ###############################
 # Create Dialogflow CX Agents #
 ###############################
@@ -16,7 +46,8 @@ resource "google_dialogflow_cx_agent" "main" {
   depends_on = [
     google_project_service.dialogflow_api,
     github_repository.dialogflow_cx_repo,
-    google_dialogflow_cx_security_settings.basic_security_settings
+    google_storage_bucket.dialogflow_cx_audio_storage,
+    google_dialogflow_cx_security_settings.basic_security_settings,
   ]
   display_name              = "${local.dialogflow_cx_agent_name}"
   location                  = var.region
@@ -33,9 +64,9 @@ resource "google_dialogflow_cx_agent" "main" {
     enable_speech_adaptation = true
   }
   advanced_settings {
-    #audio_export_gcs_destination {
-    #  uri = "${google_storage_bucket.bucket.url}/prefix-"
-    #}
+    audio_export_gcs_destination {
+      uri = "${google_storage_bucket.dialogflow_cx_audio_storage.url}/prefix-"
+    }
     dtmf_settings {
       enabled = true
       max_digits = 1
@@ -67,8 +98,8 @@ resource "google_dialogflow_cx_agent" "uat" {
   depends_on = [
     google_project_service.dialogflow_api,
     github_repository.dialogflow_cx_repo,
+    google_storage_bucket.dialogflow_cx_audio_storage,
     google_dialogflow_cx_security_settings.basic_security_settings,
-    google_dialogflow_cx_agent.main,
   ]
   display_name              = "${local.dialogflow_cx_agent_name}-uat"
   location                  = var.region
@@ -85,9 +116,9 @@ resource "google_dialogflow_cx_agent" "uat" {
     enable_speech_adaptation = true
   }
   advanced_settings {
-    #audio_export_gcs_destination {
-    #  uri = "${google_storage_bucket.bucket.url}/prefix-"
-    #}
+    audio_export_gcs_destination {
+      uri = "${google_storage_bucket.dialogflow_cx_audio_storage.url}/prefix-"
+    }
     dtmf_settings {
       enabled = true
       max_digits = 1
@@ -101,6 +132,52 @@ resource "google_dialogflow_cx_agent" "uat" {
       tracking_branch = "uat"
       access_token = data.google_secret_manager_secret_version.github_token_latest.secret_data
       branches = ["uat"]
+    }
+  }
+  text_to_speech_settings {
+    synthesize_speech_configs = jsonencode({
+      en = {
+        voice = {
+          name = "${var.dialogflow_cx_voice}"
+          ssmlGender = "${var.dialogflow_cx_ssml_gender}"
+        }
+      }
+    })
+  }
+}
+
+resource "google_dialogflow_cx_agent" "dev" {
+  depends_on = [
+    google_project_service.dialogflow_api,
+    github_repository.dialogflow_cx_repo,
+  ]
+  display_name              = "${local.dialogflow_cx_agent_name}-dev"
+  location                  = var.region
+  default_language_code     = var.dialogflow_cx_default_language
+  supported_language_codes  = [var.dialogflow_cx_default_language]
+  time_zone                 = var.dialogflow_cx_timezone
+  project                   = var.project_id
+  description               = local.dialogflow_cx_agent_desc
+  avatar_uri = "https://cloud.google.com/_static/images/cloud/icons/favicons/onecloud/super_cloud.png"
+  enable_stackdriver_logging = true
+  enable_spell_correction    = false
+  speech_to_text_settings {
+    enable_speech_adaptation = true
+  }
+  advanced_settings {
+    dtmf_settings {
+      enabled = true
+      max_digits = 1
+      finish_digit = "#"
+    }
+  }
+  git_integration_settings {
+    github_settings {
+      display_name = "dev branch"
+      repository_uri = "https://api.github.com/repos/${var.github_owner}/${local.dialogflow_cx_agent_github_repo}"
+      tracking_branch = "dev"
+      access_token = data.google_secret_manager_secret_version.github_token_latest.secret_data
+      branches = ["dev"]
     }
   }
   text_to_speech_settings {

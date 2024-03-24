@@ -2,6 +2,12 @@
 # Enable APIs #
 ###############
 
+# Enable the Identity and Access Management API
+resource "google_project_service" "iam_manager_api" {
+  service = "iam.googleapis.com"
+  disable_on_destroy = false
+}
+
 # Enable the Cloud Run API
 resource "google_project_service" "cloud_run_api" {
   service = "run.googleapis.com"

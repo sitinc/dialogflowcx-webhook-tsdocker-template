@@ -197,13 +197,20 @@ resource "google_cloudbuildv2_repository" "my_repository" {
 # Create Build Triggers #
 #########################
 
+resource "null_resource" "wait_after_repo_link" {
+  depends_on = [google_cloudbuildv2_repository.my_repository]
+
+  provisioner "local-exec" {
+    command = "sleep 60"
+  }
+}
+
 # Create the main branch trigger.
 resource "google_cloudbuild_trigger" "main" {
   depends_on = [
     google_project_service.cloudsourcerepos_api,
     google_project_service.cloudbuild_api,
-    #google_cloudbuildv2_connection.my_connection,
-    #google_cloudbuildv2_repository.my_repository,
+    null_resource.wait_after_repo_link,
   ]
   project = var.project_id
   name = "${local.cloud_run_apigw_trigger_name}-prod"
@@ -246,8 +253,7 @@ resource "google_cloudbuild_trigger" "uat" {
   depends_on = [
     google_project_service.cloudsourcerepos_api,
     google_project_service.cloudbuild_api,
-    #google_cloudbuildv2_connection.my_connection,
-    #google_cloudbuildv2_repository.my_repository,
+    null_resource.wait_after_repo_link,
   ]
   project = var.project_id
   name = "${local.cloud_run_apigw_trigger_name}-uat"
