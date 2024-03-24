@@ -130,6 +130,7 @@ resource "google_data_loss_prevention_deidentify_template" "deidentify" {
 
 resource "google_dialogflow_cx_security_settings" "basic_security_settings" {
   depends_on = [
+    google_project_service.dlp_api,
     google_data_loss_prevention_inspect_template.inspect,
     google_data_loss_prevention_deidentify_template.deidentify,
   ]
