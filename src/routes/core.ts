@@ -43,7 +43,7 @@ const newInteractionRoute = new class implements TagRouter {
         context.params.sessionId = sessionId;
         
         // Root of Dialoflow CX Webhook Request Data.
-        const requestBody = context.req.body.sessionInfo.parameters;
+        const requestBody = context.req.body;
 
         // Root of Dialoflow CX Context Parameters.
         const sessionParams = requestBody.sessionInfo.parameters;
