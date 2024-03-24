@@ -5,6 +5,10 @@ This application template project enables you to get started with Dialogflow CX 
 
 The project contains infrastructure as code (IaC) and the Typescript/Javascript source files for the main API gateway to handle Webhook fulfillment requests from Dialogflow CX.  To simplify some of the boiler plate of integrating ExpressJS with Dialogflow CX "tag" webhooks, the @sitinc/dialogflowcx-tagexpress enables simply Express Router-style refinitions of webhook "tag" similar to URL paths with standard Express endpoints.
 
+Here is a look at the solution architecture generated from this project template.
+
+![Project Template Solution Arch!](/docs/assets/20240324-project-solution-arch.png "Project Template Solution Arch")
+
 The Terraform IaC files will create all of the necessary infrastructure on Google Cloud Platform, and add a backup-restore repository to GitHub.  Below is a full list of the changes:
 
 Shared Project Resources:
