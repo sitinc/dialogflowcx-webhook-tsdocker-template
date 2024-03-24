@@ -1,3 +1,9 @@
+# Enable the Identity and Access Management API
+resource "google_project_service" "iam_manager_api" {
+  service = "iam.googleapis.com"
+  disable_on_destroy = false
+}
+
 # Enable the Secret Manager API
 resource "google_project_service" "secret_manager_api" {
   service = "secretmanager.googleapis.com"
@@ -27,6 +33,10 @@ locals {
 
 # Create the secrets.
 resource "google_secret_manager_secret" "mapped_secrets" {
+  depends_on = [
+    google_project_service.secret_manager_api,
+  ]
+  
   for_each = local.secrets
 
   secret_id = each.key
@@ -38,6 +48,10 @@ resource "google_secret_manager_secret" "mapped_secrets" {
 
 # Create the secret versions.
 resource "google_secret_manager_secret_version" "mapped_secret_values" {
+  depends_on = [
+    google_secret_manager_secret.mapped_secrets,
+  ]
+  
   for_each = local.secrets
 
   secret      = google_secret_manager_secret.mapped_secrets[each.key].id
