@@ -24,7 +24,7 @@ Per-Environment ("main" and "uat") Project Resources:
 
 Dedicated services accounts (SAs) are used for cloud run, and least possible priviledges as assigned to it and service-specific SAs like cloud build and Dialogflow CX.  Custom HTTP username and password headers are used between Cloud Run Webhooks and Dialogflow CX, all managed by Terraform.
 
-Here is the dependency graph for all resources terraform to create or utilize to deliver the solution.
+Here is the dependency graph for all resources terraform to create or utilize to deliver the solution.  Have fun doing all that by hand!  ;)
 
 ![Project Terraform Graph!](/docs/assets/20240324-terraform-graph.png "Project Terraform Graph")
 
