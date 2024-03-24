@@ -103,14 +103,6 @@ gcloud services enable storage.googleapis.com
 echo "Enabling Google Secret Manager APIs"
 gcloud services enable secretmanager.googleapis.com
 
-# Enable Google Cloud Resource Manager API
-echo "Enabling Google Cloud Resource Manager APIs"
-gcloud services enable cloudresourcemanager.googleapis.com
-
-# Enable Google Compute API
-echo "Enabling Google Compute APIs"
-gcloud services enable compute.googleapis.com
-
 # Create Storage Bucket
 gsutil mb -p "$gcp_project" -c STANDARD -l "$gcp_region" -b on "gs://${app_name}_tfstate/"
 gsutil versioning set on "gs://${app_name}_tfstate/"
