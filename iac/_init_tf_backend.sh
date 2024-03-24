@@ -91,6 +91,9 @@ fi
 
 echo "    Initializing Terraform Backend..."
 
+# Enable Dialogflow API
+gcloud services enable dialogflow.googleapis.com
+
 # Enable Google Cloud Storage API
 gcloud services enable storage.googleapis.com
 
