@@ -91,6 +91,22 @@ fi
 
 echo "    Initializing Terraform Backend..."
 
+# Set gcloud project and billing.
+gcloud config set project "$gcp_project"
+
+# Enable Google Cloud Resource Manager API
+echo "Enabling Google Cloud Resource Manager APIs"
+gcloud services enable cloudresourcemanager.googleapis.com
+
+gcloud auth application-default set-quota-project "$gcp_project"
+
+# Enable Google Compute API
+echo "Enabling Google Compute APIs"
+gcloud services enable compute.googleapis.com
+
+# Set gcloud region
+gcloud config set compute/region "$gcp_region"
+
 # Enable Dialogflow API
 echo "Enabling Google Dialogflow APIs"
 gcloud services enable dialogflow.googleapis.com
