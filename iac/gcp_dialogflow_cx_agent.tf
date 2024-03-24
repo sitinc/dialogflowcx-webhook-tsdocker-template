@@ -120,7 +120,7 @@ resource "google_dialogflow_cx_agent" "dev" {
     google_project_service.dialogflow_api,
     github_repository.dialogflow_cx_repo,
   ]
-  display_name              = "${local.dialogflow_cx_agent_name}"
+  display_name              = "${local.dialogflow_cx_agent_name}-dev"
   location                  = var.region
   default_language_code     = var.dialogflow_cx_default_language
   supported_language_codes  = [var.dialogflow_cx_default_language]
