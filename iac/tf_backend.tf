@@ -1,6 +1,6 @@
 terraform {
   backend "gcs" {
-    bucket = "mega-kitten-test_tfstate"
+    bucket = "__GCP_TFSTATE_BUCKET__"
     prefix = "terraform/state"
   }
 }
