@@ -92,19 +92,15 @@ fi
 echo "    Initializing Terraform Backend..."
 
 # Enable Google Cloud Storage API
-echo "Enabling GCP storage.googleapis.com API"
 gcloud services enable storage.googleapis.com
 
 # Enable Google Secret Manager API
-echo "Enabling GCP secretmanager.googleapis.com API"
 gcloud services enable secretmanager.googleapis.com
 
 # Enable Google Cloud Resource Manager API
-echo "Enabling GCP cloudresourcemanager.googleapis.com API"
 gcloud services enable cloudresourcemanager.googleapis.com
 
 # Enable Google Compute API
-echo "Enabling GCP compute.googleapis.com API"
 gcloud services enable compute.googleapis.com
 
 # Create Storage Bucket
