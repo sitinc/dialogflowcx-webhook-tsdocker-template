@@ -198,6 +198,7 @@ resource "google_cloudbuildv2_repository" "my_repository" {
 # Create the main branch trigger.
 resource "google_cloudbuild_trigger" "main" {
   depends_on = [
+    google_project_service.cloudsourcerepos_api,
     google_project_service.cloudbuild_api,
     google_cloudbuildv2_connection.my_connection,
     google_cloudbuildv2_repository.my_repository,
@@ -241,6 +242,7 @@ resource "google_cloudbuild_trigger" "main" {
 # Create the uat branch trigger.
 resource "google_cloudbuild_trigger" "uat" {
   depends_on = [
+    google_project_service.cloudsourcerepos_api,
     google_project_service.cloudbuild_api,
     google_cloudbuildv2_connection.my_connection,
     google_cloudbuildv2_repository.my_repository,
