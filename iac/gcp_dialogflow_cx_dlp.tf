@@ -107,7 +107,7 @@ resource "google_data_loss_prevention_inspect_template" "inspect" {
 
 resource "google_data_loss_prevention_deidentify_template" "deidentify" {
   depends_on = [
-    google_project_service.dlp_api
+    google_project_service.dlp_api,
   ]
   parent       = "projects/${var.project_id}/locations/${var.region}"
   display_name = "${var.app_name}-deidentify-template"
@@ -128,21 +128,12 @@ resource "google_data_loss_prevention_deidentify_template" "deidentify" {
 #  uniform_bucket_level_access = true
 #}
 
-resource "null_resource" "wait_after_dlp_templates" {
-  depends_on = [
-    google_data_loss_prevention_inspect_template.inspect,
-    google_data_loss_prevention_deidentify_template.deidentify,
-  ]
-
-  provisioner "local-exec" {
-    command = "sleep 120"
-  }
-}
-
 resource "google_dialogflow_cx_security_settings" "basic_security_settings" {
   depends_on = [
     google_project_service.dlp_api,
-    null_resource.wait_after_dlp_templates,
+    google_data_loss_prevention_inspect_template.inspect,
+    google_data_loss_prevention_deidentify_template.deidentify,
+    google_dialogflow_cx_agent.dev,
   ]
   display_name        = "${var.app_name}-security-settings"
   location            = var.region
@@ -160,5 +151,6 @@ resource "google_dialogflow_cx_security_settings" "basic_security_settings" {
   insights_export_settings {
     enable_insights_export = true
   }
-  retention_strategy = "REMOVE_AFTER_CONVERSATION"
+  retention_window_days = 30
+  #retention_strategy = "REMOVE_AFTER_CONVERSATION"
 }
