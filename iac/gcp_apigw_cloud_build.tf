@@ -31,7 +31,7 @@ resource "google_service_account" "apigw_build_sa" {
   display_name = "Dedicated Cloud Build SA for ${local.cloud_run_apigw_service_name} service."
 }
 
-# Permisions for dedicated SA account for APIGW Cloud Build.
+# Permit Dedicated Build SA access to read secrets.
 resource "google_project_iam_member" "cloudbuild_secrets_viewer" {
   depends_on = [ google_project_service.iam_manager_api ]
   project = var.project_id
@@ -39,11 +39,48 @@ resource "google_project_iam_member" "cloudbuild_secrets_viewer" {
   member  = "serviceAccount:${google_service_account.apigw_build_sa.email}"
 }
 
+# Permit all Build SAs to Deploy Cloud Run
 resource "google_project_iam_member" "cloudbuild_cloudrun_deployer" {
   depends_on = [ google_project_service.iam_manager_api ]
   project = var.project_id
   role    = "roles/run.admin"
   member  = "serviceAccount:${google_service_account.apigw_build_sa.email}"
+}
+
+resource "google_project_iam_member" "cloudbuild_sa1_cloudrun_deployer" {
+  depends_on = [ google_project_service.iam_manager_api ]
+  project = var.project_id
+  role    = "roles/run.admin"
+  member  = "serviceAccount:${data.google_project.main_project.number}@cloudbuild.gserviceaccount.com"
+}
+
+resource "google_project_iam_member" "cloudbuild_sa2_cloudrun_deployer" {
+  depends_on = [ google_project_service.iam_manager_api ]
+  project = var.project_id
+  role    = "roles/run.admin"
+  member  = "serviceAccount:service-${data.google_project.main_project.number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
+}
+
+# Permit all Build SAs to Act-as Dedicated Cloud Run SA
+resource "google_project_iam_member" "cloudbuild_cloudrun_actas" {
+  depends_on = [ google_project_service.iam_manager_api ]
+  project = var.project_id
+  role    = "roles/iam.serviceAccountUser"
+  member  = "serviceAccount:${google_service_account.apigw_build_sa.email}"
+}
+
+resource "google_project_iam_member" "cloudbuild_sa1_cloudrun_actas" {
+  depends_on = [ google_project_service.iam_manager_api ]
+  project = var.project_id
+  role    = "roles/iam.serviceAccountUser"
+  member  = "serviceAccount:${data.google_project.main_project.number}@cloudbuild.gserviceaccount.com"
+}
+
+resource "google_project_iam_member" "cloudbuild_sa2_cloudrun_actas" {
+  depends_on = [ google_project_service.iam_manager_api ]
+  project = var.project_id
+  role    = "roles/iam.serviceAccountUser"
+  member  = "serviceAccount:service-${data.google_project.main_project.number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"
 }
 
 
@@ -65,7 +102,9 @@ data "google_project" "main_project" {
 }
 
 data "google_iam_policy" "buildagent_secretAccessor" {
-  depends_on = [data.google_project.main_project]
+  depends_on = [
+    data.google_project.main_project,
+  ]
     binding {
         role = "roles/secretmanager.secretAccessor"
         members = [
@@ -77,7 +116,10 @@ data "google_iam_policy" "buildagent_secretAccessor" {
 }
 
 resource "google_secret_manager_secret_iam_policy" "npm_token_policy" {
-  depends_on = [ google_project_service.iam_manager_api ]
+  depends_on = [
+    google_project_service.secret_manager_api,
+    google_project_service.iam_manager_api,
+  ]
   project = var.project_id
   secret_id = data.google_secret_manager_secret.npm_token.secret_id
   policy_data = data.google_iam_policy.buildagent_secretAccessor.policy_data
@@ -105,7 +147,10 @@ data "google_iam_policy" "serviceagent_secretAccessor" {
 }
 
 resource "google_secret_manager_secret_iam_policy" "github_token_policy" {
-  depends_on = [ google_project_service.iam_manager_api ]
+  depends_on = [
+    google_project_service.secret_manager_api,
+    google_project_service.iam_manager_api,
+  ]
   project = var.project_id
   secret_id = data.google_secret_manager_secret.github_token.secret_id
   policy_data = data.google_iam_policy.serviceagent_secretAccessor.policy_data
@@ -117,7 +162,10 @@ resource "google_secret_manager_secret_iam_policy" "github_token_policy" {
 
 # Create the GitHub connection.
 resource "google_cloudbuildv2_connection" "my_connection" {
-    depends_on = [google_secret_manager_secret_iam_policy.github_token_policy]
+    depends_on = [
+      google_project_service.cloudsourcerepos_api,
+      google_secret_manager_secret_iam_policy.github_token_policy,
+    ]
     project = var.project_id
     location = var.region
     name = local.github_cxn_id
@@ -132,6 +180,9 @@ resource "google_cloudbuildv2_connection" "my_connection" {
 
 # Link the GitHub repository.
 resource "google_cloudbuildv2_repository" "my_repository" {
+  depends_on = [
+    google_project_service.cloudsourcerepos_api,
+  ]
   project = var.project_id
   location = var.region
   name = "${var.github_owner}-${var.github_repo}"
@@ -145,7 +196,10 @@ resource "google_cloudbuildv2_repository" "my_repository" {
 
 # Create the main branch trigger.
 resource "google_cloudbuild_trigger" "main" {
-  depends_on = [google_cloudbuildv2_repository.my_repository]
+  depends_on = [
+    google_project_service.cloudbuild_api,
+    google_cloudbuildv2_repository.my_repository,
+  ]
   project = var.project_id
   name = "${local.cloud_run_apigw_trigger_name}-prod"
   description = "Trigger for changes to the main branch"
@@ -184,7 +238,10 @@ resource "google_cloudbuild_trigger" "main" {
 
 # Create the uat branch trigger.
 resource "google_cloudbuild_trigger" "uat" {
-  depends_on = [google_cloudbuildv2_repository.my_repository]
+  depends_on = [
+    google_project_service.cloudbuild_api,
+    google_cloudbuildv2_repository.my_repository,
+  ]
   project = var.project_id
   name = "${local.cloud_run_apigw_trigger_name}-uat"
   description = "Trigger for changes to the uat branch"
@@ -232,6 +289,9 @@ resource "null_resource" "trigger_prod_build" {
     google_secret_manager_secret_iam_policy.npm_token_policy,
     local_file.out_swagger_json,
     local_file.out_tos_txt,
+    google_artifact_registry_repository_iam_policy.policy,
+    google_project_iam_member.cloudbuild_sa1_cloudrun_deployer,
+    google_project_iam_member.cloudbuild_sa2_cloudrun_deployer,
   ]
 
   provisioner "local-exec" {
@@ -246,9 +306,51 @@ resource "null_resource" "trigger_uat_build" {
     google_secret_manager_secret_iam_policy.npm_token_policy,
     local_file.out_swagger_json,
     local_file.out_tos_txt,
+    google_artifact_registry_repository_iam_policy.policy,
+    google_project_iam_member.cloudbuild_sa1_cloudrun_deployer,
+    google_project_iam_member.cloudbuild_sa2_cloudrun_deployer,
   ]
 
   provisioner "local-exec" {
     command = "cd .. && gcloud beta builds submit --config=./iac/cloudbuild.yaml --project=${var.project_id}  --substitutions REPO_NAME=${var.github_repo},COMMIT_SHA=first,_APP_NAME=${var.app_name},_SERVICE_NAME=${local.cloud_run_apigw_service_name}-uat,_TRIGGER_ID=${google_cloudbuild_trigger.uat.trigger_id}"
   }
+}
+
+resource "google_artifact_registry_repository" "my_repository" {
+  depends_on = [
+    google_project_service.artifactregistry_api,
+  ]
+
+  provider = google
+
+  location      = var.region # Match the provider region if appropriate
+  repository_id = "cloud-run-source-deploy"
+  description   = "Repository for Cloud Run and Cloud Build artifacts"
+  format        = "DOCKER"
+
+  labels = {
+    environment = "production"
+  }
+}
+
+data "google_iam_policy" "artifact_registry_writer" {
+  binding {
+    role = "roles/artifactregistry.writer"
+
+    members = [
+      "serviceAccount:${data.google_project.main_project.number}@cloudbuild.gserviceaccount.com",
+      "serviceAccount:service-${data.google_project.main_project.number}@gcp-sa-cloudbuild.iam.gserviceaccount.com",
+      "serviceAccount:${google_service_account.apigw_build_sa.email}",
+    ]
+  }
+}
+
+resource "google_artifact_registry_repository_iam_policy" "policy" {
+  depends_on = [
+    google_project_service.iam_manager_api,
+    google_project_service.artifactregistry_api,
+  ]
+  location      = google_artifact_registry_repository.my_repository.location
+  repository    = google_artifact_registry_repository.my_repository.repository_id
+  policy_data = data.google_iam_policy.artifact_registry_writer.policy_data
 }
