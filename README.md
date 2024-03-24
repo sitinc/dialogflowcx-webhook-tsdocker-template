@@ -24,7 +24,13 @@ Per-Environment ("main" and "uat") Project Resources:
 
 Dedicated services accounts (SAs) are used for cloud run, and least possible priviledges as assigned to it and service-specific SAs like cloud build and Dialogflow CX.  Custom HTTP username and password headers are used between Cloud Run Webhooks and Dialogflow CX, all managed by Terraform.
 
+Here is the dependency graph for all resources terraform to create or utilize to deliver the solution.
+
+![Project Terraform Graph!](/docs/assets/20240324-terraform-graph.png "Project Terraform Graph")
+
 Multiple environments are managed under a single branch to simplify the inter-referencing of configurations.  The expected behaviour of multi-brand IaC is that both the "main" branch and "uat" branch would each have "main" and "uat" resources for their GCP project-isolated environments.
+
+Branch management is slightly less intuitive in the name of overall project simplicity.  The meaning of "main" and "uat" branches differ between the IaC and ExpressJS Webhook API components of the project.  More documentation to follow on this in the future, but managing the project as-is should be straight forward after completing this guide.
 
 
 # Before Getting Started
