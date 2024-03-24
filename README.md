@@ -5,7 +5,7 @@ This application template project enables you to get started with Dialogflow CX 
 
 The project contains infrastructure as code (IaC) and the Typescript/Javascript source files for the main API gateway to handle Webhook fulfillment requests from Dialogflow CX.  To simplify some of the boiler plate of integrating ExpressJS with Dialogflow CX "tag" webhooks, the @sitinc/dialogflowcx-tagexpress enables simply Express Router-style refinitions of webhook "tag" similar to URL paths with standard Express endpoints.
 
-Here is a look at the solution architecture generated from this project template.
+Here is a look at the solution architecture generated from this project template.  We're going to generate all of this in under 10 minutes.
 
 ![Project Template Solution Arch!](/docs/assets/20240324-project-solution-arch.png "Project Template Solution Arch")
 
@@ -30,7 +30,7 @@ Multiple environments are managed under a single branch to simplify the inter-re
 # Before Getting Started
 
 
-Before we get started, you'll need the following setup.
+Before we get started, you'll need the following setup.  When I say we'll generate this architecture in 10 minutes, it assums the pre-requisites are already available.  For someone who works with these tools on a daily basis, you may already be setup here, minus fetching the GitHub Cloud Build App Id.
 
  - [Create a Google Cloud Platform account](https://console.cloud.google.com/getting-started?pli=1), with billing enabled.  The resources created by this project should not contribute anything meaningful in terms of costs if used by a single developer for testing purposes.
  - [Create a user account on GitHub](https://docs.github.com/en/get-started/start-your-journey/creating-an-account-on-github), free tier is fine.
@@ -45,7 +45,7 @@ Before we get started, you'll need the following setup.
 \* The template projects assumes this environment, but it shouldn't matter if you only plan on using public packages.  Simply enter any random string when prompted to input the NPM API token during the relevant stage.
 
 
-# Getting Started
+# Create and Deploy the Project Application
 
 
 With the pre-requisites out of the way, we're ready to get started.  The next few steps might require some adjustments based on how you like to work.
